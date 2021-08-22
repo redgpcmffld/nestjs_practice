@@ -1,45 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { Board, BoardStatus } from './boards.model';
-
-function makeRandomID() {
-  return Math.random().toString(36).substr(2, 16); // 간단 랜덤 아이디 생성
-}
+import { InjectRepository } from '@nestjs/typeorm';
+import { BoardRepository } from './board.repository';
+import { CreateBoardDto } from './dto/create-board.dto';
+import { Board } from './board.entity';
+import { UpdateBoardDto } from './dto/update-board.dto';
 
 @Injectable()
 export class BoardsService {
-  private boards: Board[] = []; // 외부 접근 막기 위해 private 선언, 타입 = Board, 초기값 []
+  constructor(
+    @InjectRepository(BoardRepository)
+    private boardRepository: BoardRepository,
+  ) {}
 
-  getAllBoards(): Board[] {
-    return this.boards;
+  createBoard(CreateBoardDto: CreateBoardDto): Promise<Board> {
+    return this.boardRepository.createBoard(CreateBoardDto);
   }
 
-  getBoard(id: string): Board {
-    return this.boards.find((board) => board.id === id); // id가 일치하는 board 객체 리턴
+  getAllBoards(): Promise<Board[]> {
+    return this.boardRepository.getAllBoards();
   }
 
-  createBoard(CreateBoardDto) {
-    const {title, description}  = CreateBoardDto
-    const board: Board = {
-      id: makeRandomID(),
-      title,
-      description,
-      status: BoardStatus.PUBLIC,
-    };
-
-    this.boards.push(board); //boards list에 신규 객체 push
-    return board;
+  getBoard(id: number): Promise<Board> {
+    return this.boardRepository.getBoard(id);
   }
 
-  deleteBoard(id: string): void {
-    this.boards = this.boards.filter((board) => board.id !== id); //filter method를 통해 id가 해당하는 객체를 제외한 모든 객체를 리턴
+  updateBoard(id: number, UpdateBoardDto: UpdateBoardDto): Promise<Board> {
+    return this.boardRepository.updateBoard(id, UpdateBoardDto);
   }
 
-  updateBoard(id: string, UpdateBoardDto): Board {
-    const board = this.getBoard(id);
-    const {title, description, status} = UpdateBoardDto
-    board.status = status;
-    board.title = title;
-    board.description = description;
-    return board
+  deleteBoard(id: number): Promise<void> {
+    return this.boardRepository.deleteBoard(id);
   }
 }
