@@ -9,8 +9,7 @@ export class BoardStatusValidationPipe implements PipeTransform {
   ]
   
   private isStatusValid(status: any) {
-    const index = this.StatusOptions.indexOf(status);
-    return index !== -1;
+    return this.StatusOptions.includes(status);
   }
   
   transform(value: any, metadata: ArgumentMetadata) {
