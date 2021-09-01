@@ -4,6 +4,8 @@ import { BoardRepository } from './board.repository';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Board } from './board.entity';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { User } from 'src/auth/user.entity';
+
 
 @Injectable()
 export class BoardsService {
@@ -12,12 +14,16 @@ export class BoardsService {
     private boardRepository: BoardRepository,
   ) {}
 
-  createBoard(CreateBoardDto: CreateBoardDto): Promise<Board> {
-    return this.boardRepository.createBoard(CreateBoardDto);
+  createBoard(CreateBoardDto: CreateBoardDto, user: User): Promise<Board> {
+    return this.boardRepository.createBoard(CreateBoardDto, user);
   }
 
   getAllBoards(): Promise<Board[]> {
     return this.boardRepository.getAllBoards();
+  }
+
+  getMyBoards(user: User): Promise<Board[]> {
+    return this.boardRepository.getMyBoards(user);
   }
 
   getBoard(id: number): Promise<Board> {
@@ -28,7 +34,7 @@ export class BoardsService {
     return this.boardRepository.updateBoard(id, UpdateBoardDto);
   }
 
-  deleteBoard(id: number): Promise<void> {
-    return this.boardRepository.deleteBoard(id);
+  deleteBoard(id: number, user:User): Promise<void> {
+    return this.boardRepository.deleteBoard(id, user);
   }
 }
